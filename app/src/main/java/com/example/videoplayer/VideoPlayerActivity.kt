@@ -20,7 +20,7 @@ class VideoPlayerActivity : AppCompatActivity() {
     private var isVideoLocked: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState)
         binding = ActivityVideoPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
