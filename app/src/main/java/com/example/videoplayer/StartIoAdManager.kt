@@ -9,7 +9,6 @@ import com.startapp.sdk.adsbase.StartAppAd
 import com.startapp.sdk.adsbase.adlisteners.AdDisplayListener
 import com.startapp.sdk.adsbase.adlisteners.AdEventListener
 import com.startapp.sdk.adsbase.adlisteners.VideoListener
-import com.startapp.sdk.adsbase.adlisteners.OnRewardListener
 
 /**
  * Dedicated helper manager for handling Start.io Launch Interstitial
@@ -98,17 +97,27 @@ class StartIoAdManager(private val activity: Activity) {
             // Set VideoListener for completion events
             rewardedAd?.setVideoListener(VideoListener {
                 Log.d(TAG, "Video Ad playback finished completely")
+                onRewardGranted()
             })
 
-            // Show ad with OnRewardListener
-            rewardedAd?.showAd(object : OnRewardListener {
-                override fun onRewardWithRewardListener(reward: Boolean) {
-                    if (reward) {
-                        Log.i(TAG, "🎉 User completed Rewarded Video! Granting video unlock reward.")
-                        onRewardGranted()
-                    } else {
-                        Log.w(TAG, "User closed ad before completion. Reward NOT granted.")
-                    }
+            // Show ad with AdDisplayListener
+            rewardedAd?.showAd(object : AdDisplayListener {
+                override fun adHidden(ad: Ad) {
+                    Log.d(TAG, "Rewarded Video Ad closed")
+                    onAdClosed()
+                }
+
+                override fun adDisplayed(ad: Ad) {
+                    Log.d(TAG, "Rewarded Video Ad displayed on screen")
+                }
+
+                override fun adClicked(ad: Ad) {
+                    Log.d(TAG, "User clicked Rewarded Video Ad")
+                }
+
+                override fun adNotDisplayed(ad: Ad) {
+                    Log.w(TAG, "Rewarded Video Ad failed to display")
+                    onAdClosed()
                 }
             })
 
